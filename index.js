@@ -1,98 +1,98 @@
-const {foo: helperFoo} = require('./helpers/helper.js');
+const express = require('express');
 
-const http = require('node:http');
-const path = require('node:path');
-const readline = require("node:readline/promises");
-const fs = require('node:fs'); // з callback
-const fsPromises = require('node:fs/promises');
-const EventEmitter = require('node:events');
-const os = require('node:os');
+const app = express();
 
-const foo = async () => {
-    // http
-    // const server = http.createServer((req, res) => {
-    //     res.writeHead(200, { 'Content-Type': 'application/json' });
-    //     res.end(JSON.stringify({
-    //         data: 'Hello World!',
-    //     }));
-    // });
-    //
-    // server.listen(3000);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-    // path
-    // const pathToFile = __filename;
-    // console.log(pathToFile);
-    // console.log(path.dirname(pathToFile));
-    // console.log(path.extname(pathToFile));
-    // console.log(path.basename(pathToFile));
-    // console.log(path.parse(pathToFile));
-    // console.log(path.isAbsolute(pathToFile));
+const users = [
+    {id: 1, name: "Maksym", email: "feden@gmail.com", password: "qwe123"},
+    {id: 2, name: "Alina", email: "alindosik@gmail.com", password: "ert345"},
+    {id: 3, name: "Anna", email: "ann43@gmail.com", password: "ghj393123"},
+    {id: 4, name: "Tamara", email: "tomochka23@gmail.com", password: "afs787"},
+    {id: 5, name: "Dima", email: "taper@gmail.com", password: "rtt443"},
+    {id: 6, name: "Rita", email: "torpeda@gmail.com", password: "vcx344"},
+    {id: 7, name: "Denis", email: "denchik@gmail.com", password: "sdf555"},
+    {id: 8, name: "Sergey", email: "BigBoss@gmail.com", password: "ccc322"},
+    {id: 9, name: "Angela", email: "lala@gmail.com", password: "cdd343"},
+    {id: 10, name: "Irina", email: "irka7@gmail.com", password: "kkk222"}
+];
 
-    // Readline
-    // const rlInstance = readline.createInterface({
-    //     input: process.stdin,
-    //     output: process.stdout,
-    // })
-    // const name = await rlInstance.question('Name?');
-    // console.log(`Your name is ${name}`);
-    // process.exit(0);
+// app.get('/users', (req, res) => {
+//     res.send('Get users');
+// });
 
-    // FS, приклад з callback
-    // fs.mkdir('./test', () => {});
+app.get('/users', (req, res) => {
+    try {
+        res.send(users);
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
-    // FS - призначений для взаємодії з файловою системою
-    // const pathToFile = path.join(__dirname, 'test.txt');
-    // await fsPromises.writeFile(pathToFile, 'Hello World!\n');
-    // const data = await fsPromises.readFile(pathToFile, 'utf8');
-    // console.log(data);
-    // await fsPromises.appendFile(pathToFile, 'Some new data');
-    // await fsPromises.mkdir(path.join(__dirname, 'new-folder'), {recursive: true});
-    // await fsPromises.mkdir(path.join(__dirname, 'new-folder', 'another-folder'), {recursive: true});
-    // await fsPromises.rm(path.join(__dirname, 'new-folder'), {recursive: true});
+app.post('/users', (req, res) => {
+    try {
+        const {name, email, password} = req.body;
+        // TODO validate data
+        const id = users[users.length - 1].id + 1
+        const newUser = {id, name, email, password};
+        users.push(newUser);
+        res.status(201).send(newUser);
 
-    // await fsPromises.unlink(pathToFile); // delete file
-    // await fsPromises.rename(pathToFile, path.join(__dirname, 'new-folder', 'new-file.txt')); // перейменування та перенесення до папки new-folder
-    // await fsPromises.copyFile(pathToFile, path.join(__dirname, 'new-folder', 'new-file.txt')); // перейменування та копіювання до папки new-folder
-    // const stat = await fsPromises.stat(pathToFile);
-    // console.log(stat);
-    // console.log(stat.isDirectory()); // перевірка, чи є те, що у stat директорією
-    // console.log(stat.isFile()); // перевірка, чи є те, що у stat файлом
+        // console.log(req.params);
+        // console.log(req.query);
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
-    // Streams
-    // const pathToFile = path.join(__dirname, '25900.pdf');
-    // const readStream = fs.createReadStream(pathToFile);
-    // const writeStream = fs.createWriteStream(path.join(__dirname, 'new-bid-file.pdf')); // дає можливість опрацювання інформації малими порціями
-    // readStream.on('data', (chunk) => {
-    //     console.log('chunk', chunk.length);
-    //     writeStream.write(chunk);
-    // }) // аналогічна дія через pipe
-    // readStream.pipe(writeStream);
+app.get('/users/:userId', (req, res) => {
+    try {
+        const userId = Number(req.params.userId);
+        const user = users.find((user) => user.id === userId);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.send(user);
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
-    // Events, емітити подію можна з різних місць проєкту
-    // const emitter = new EventEmitter();
-    // emitter.on('event', (...args) => {
-    //     args.length === 0
-    //         ? console.log('No args yet')
-    //         : console.log(args);
-    //     console.log('Event 1 happened');
-    // }); // обробник, 'event' - ключ, що може мати будь-яку назву. Як названий, так і слід викликати у emit
-    // emitter.once('event', () => {
-    //     console.log('Event 2 happened');
-    // }); // once замість on - відпрацює раз
-    // emitter.emit('event'); // можна викликати кілька разів - стільки ж раз відпрацює; тільки ключ визначає, скільки разів буде працювати обробник
-    // emitter.emit('event', 'Hello', 345);
+app.put('/users/:userId', (req, res) => {
+    try {
+        const userId = Number(req.params.userId);
+        const userIndex = users.findIndex((user) => user.id === userId);
+        if (userIndex === -1) {
+            return res.status(404).send("User not found");
+        }
+        const {name, email, password} = req.body;
+        // TODO validate data
+        // users[userIndex] = {...users[userIndex], name, email, password};
+        users[userIndex].name = name;
+        users[userIndex].email = email;
+        users[userIndex].password = password;
+        res.status(201).send(users[userIndex]);
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
-    // OS
-    console.log(os.arch());
-    console.log(os.cpus());
-    console.log(os.totalmem() / 1024 / 1024/ 1024, 'gb');
-    console.log(os.freemem() / 1024 / 1024/ 1024, 'gb');
-    console.log(os.homedir());
-    console.log(os.hostname());
-    console.log(os.platform());
-    console.log(os.userInfo());
-}
+app.delete('/users/:userId', (req, res) => {
+    try {
+        const userId = Number(req.params.userId);
+        const  userIndex = users.findIndex((user) => user.id === userId);
+        if (userIndex === -1) {
+            return res.status(404).send('No such user');
+        }
+        users.splice(userIndex, 1);
+        res.sendStatus(204);
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
-void foo();
-
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
+});
 
