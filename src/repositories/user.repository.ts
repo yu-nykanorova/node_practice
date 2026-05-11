@@ -26,6 +26,25 @@ class UserRepository {
 
     return users.find((user) => user.id === userId);
   }
+
+  public async update(userIndex: number, dto: Partial<IUser>): Promise<IUser> {
+    const users = await read();
+
+    users[userIndex].name = dto.name;
+    users[userIndex].email = dto.email;
+    users[userIndex].password = dto.password;
+
+    await write(users);
+    return users[userIndex];
+  }
+
+  public async delete(userIndex: number): Promise<void> {
+    const users = await read();
+
+    users.splice(userIndex, 1);
+
+    await write(users);
+  }
 }
 
 export const userRepository = new UserRepository();
