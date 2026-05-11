@@ -1,19 +1,16 @@
 const express = require('express');
-const fsPromises = require('node:fs/promises');
-const path = require('node:path');
-const {getData, validateData} = require("./helpers/helpers");
+const { readData, writeData} = require('./services/file.service');
+const { validateData } = require('./helpers/helpers');
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const pathToFile = path.join(__dirname, 'users.json');
 
 app.get('/users', async (req, res) => {
     try {
-        const users = await getData(pathToFile);
-
+        const users = await readData();
         res.send(users);
     } catch (e) {
         res.status(500).send(e.message);
@@ -30,7 +27,7 @@ app.post('/users', async (req, res) => {
             return res.status(400).send(validationResult);
         }
 
-        const users = await getData(pathToFile);
+        const users = await readData();
 
         if (users.find((user) => user.email === email)) {
             return res.status(409).send("This email is already in use.");
@@ -40,7 +37,7 @@ app.post('/users', async (req, res) => {
         const newUser = {id, name, email, password};
         users.push(newUser);
 
-        await fsPromises.writeFile(pathToFile, JSON.stringify(users), 'utf8');
+        await writeData(users);
 
         res.status(201).send(newUser);
 
@@ -57,7 +54,7 @@ app.get('/users/:userId', async (req, res) => {
             return res.status(400).send("User must be an integer");
         }
 
-        const users = await getData(pathToFile);
+        const users = await readData();
 
         const user = users.find((user) => user.id === userId);
         if (!user) {
@@ -77,7 +74,7 @@ app.put('/users/:userId', async (req, res) => {
             return res.status(400).send("User must be an integer");
         }
 
-        const users = await getData(pathToFile);
+        const users = await readData();
 
         const userIndex = users.findIndex((user) => user.id === userId);
         if (userIndex === -1) {
@@ -95,7 +92,7 @@ app.put('/users/:userId', async (req, res) => {
         users[userIndex].email = email;
         users[userIndex].password = password;
 
-        await fsPromises.writeFile(pathToFile, JSON.stringify(users), 'utf8');
+        await writeData(users);
 
         res.status(201).send(users[userIndex]);
     } catch (e) {
@@ -111,7 +108,7 @@ app.delete('/users/:userId', async (req, res) => {
             return res.status(400).send("User must be an integer");
         }
 
-        const users = await getData(pathToFile);
+        const users = await readData();
 
         const  userIndex = users.findIndex((user) => user.id === userId);
         if (userIndex === -1) {
@@ -119,7 +116,7 @@ app.delete('/users/:userId', async (req, res) => {
         }
         users.splice(userIndex, 1);
 
-        await fsPromises.writeFile(pathToFile, JSON.stringify(users), 'utf8');
+        await writeData(users);
 
         res.sendStatus(204);
     } catch (e) {

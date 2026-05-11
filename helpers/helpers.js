@@ -1,10 +1,3 @@
-const fsPromises = require('node:fs/promises');
-
-const getData = async (path) => {
-    const data = await fsPromises.readFile(path, 'utf8');
-    return JSON.parse(data);
-};
-
 const validateData = (name, email, password) => {
     const passRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
@@ -23,4 +16,4 @@ const validateData = (name, email, password) => {
     return null;
 }
 
-module.exports = {getData, validateData};
+module.exports = {validateData};
