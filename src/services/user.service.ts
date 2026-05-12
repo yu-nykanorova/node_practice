@@ -7,7 +7,7 @@ class UserService {
     return await userRepository.getList();
   }
 
-  public async create(dto: Partial<IUser>): Promise<IUser> {
+  public async create(dto: Omit<IUser, "id">): Promise<IUser> {
     if (!dto.name || dto.name.length < 3) {
       throw new ApiError(
         "Name is required and should be at least 3 characters long",
@@ -33,7 +33,7 @@ class UserService {
     return await userRepository.create(dto);
   }
 
-  public async getById(userId: number): Promise<IUser> {
+  public async getById(userId: string): Promise<IUser> {
     if (Number.isNaN(userId)) {
       throw new ApiError("User id must be an integer", 400);
     }
@@ -47,7 +47,7 @@ class UserService {
     return user;
   }
 
-  public async update(userId: number, dto: Partial<IUser>): Promise<IUser> {
+  public async update(userId: string, dto: Partial<IUser>): Promise<IUser> {
     if (Number.isNaN(userId)) {
       throw new ApiError("User id must be an integer", 400);
     }
@@ -79,7 +79,7 @@ class UserService {
     return await userRepository.update(userIndex, dto);
   }
 
-  public async delete(userId: number): Promise<void> {
+  public async delete(userId: string): Promise<void> {
     if (Number.isNaN(userId)) {
       throw new ApiError("User id must be an integer", 400);
     }

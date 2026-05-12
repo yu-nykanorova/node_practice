@@ -1,5 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
+import * as mongoose from "mongoose";
 
+import { configs } from "./config/configs";
 import { ApiError } from "./errors/api-error";
 import { userRouter } from "./routers/user.router";
 
@@ -9,80 +11,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/users", userRouter);
-
-// app.put(
-//   "/users/:userId",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const userId = Number(req.params.userId);
-//
-//       if (Number.isNaN(userId)) {
-//         throw new ApiError("User must be an integer", 400);
-//       }
-//
-//       const users = await read();
-//
-//       const userIndex = users.findIndex((user) => user.id === userId);
-//       if (userIndex === -1) {
-//         throw new ApiError("User not found", 404);
-//       }
-//       const { name, email, password } = req.body;
-//
-//       if (!name || name.length < 3) {
-//         throw new ApiError(
-//           "Name is required and should be at least 3 characters long",
-//           400,
-//         );
-//       }
-//       if (!email || !email.includes("@")) {
-//         throw new ApiError("Email is required and should be valid", 400);
-//       }
-//       if (!password || password.length < 6) {
-//         throw new ApiError(
-//           "Password is required and should be at least 6 characters long",
-//           400,
-//         );
-//       }
-//
-//       users[userIndex].name = name;
-//       users[userIndex].email = email;
-//       users[userIndex].password = password;
-//
-//       await write(users);
-//
-//       res.status(201).send(users[userIndex]);
-//     } catch (e) {
-//       next(e);
-//     }
-//   },
-// );
-//
-// app.delete(
-//   "/users/:userId",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const userId = Number(req.params.userId);
-//
-//       if (Number.isNaN(userId)) {
-//         throw new ApiError("User must be an integer", 400);
-//       }
-//
-//       const users = await read();
-//
-//       const userIndex = users.findIndex((user) => user.id === userId);
-//       if (userIndex === -1) {
-//         throw new ApiError("No such user", 404);
-//       }
-//       users.splice(userIndex, 1);
-//
-//       await write(users);
-//
-//       res.sendStatus(204);
-//     } catch (e) {
-//       next(e);
-//     }
-//   },
-// );
 
 app.use((error: ApiError, req: Request, res: Response, next: NextFunction) => {
   res.status(error.status || 500).send(error.message);
@@ -94,6 +22,13 @@ process.on("uncaughtException", (error) => {
   process.exit(1);
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+app.listen(configs.APP_PORT, async () => {
+  await mongoose.connect(configs.MONGO_URI);
+  console.log(
+    `Server running on http://${configs.APP_HOST}${configs.APP_PORT}`,
+  );
 });
+
+console.log(process.cwd());
+console.log(__dirname);
+console.log(process.env.APP_PORT);
