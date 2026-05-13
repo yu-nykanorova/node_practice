@@ -7,7 +7,7 @@ class UserService {
     return await userRepository.getList();
   }
 
-  public async create(dto: Omit<IUser, "id">): Promise<IUser> {
+  public async create(dto: Partial<IUser>): Promise<IUser> {
     if (!dto.name || dto.name.length < 3) {
       throw new ApiError(
         "Name is required and should be at least 3 characters long",
@@ -34,7 +34,6 @@ class UserService {
   }
 
   public async getById(userId: string): Promise<IUser> {
-
     const user = await userRepository.getById(userId);
 
     if (!user) {
@@ -45,7 +44,6 @@ class UserService {
   }
 
   public async update(userId: string, dto: Partial<IUser>): Promise<IUser> {
-
     if (!dto.name || dto.name.length < 3) {
       throw new ApiError(
         "Name is required and should be at least 3 characters long",

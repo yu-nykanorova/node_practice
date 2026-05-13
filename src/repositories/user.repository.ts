@@ -1,4 +1,4 @@
-import { IUser, IUserCreateDto } from "../interfaces/user.interface";
+import { IUser } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
 class UserRepository {
@@ -6,16 +6,18 @@ class UserRepository {
     return await User.find({});
   }
 
-  public async create(dto: IUserCreateDto): Promise<IUser> {
+  public async create(dto: Partial<IUser>): Promise<IUser> {
     return await User.create(dto);
-
   }
 
   public async getById(userId: string): Promise<IUser | null> {
     return await User.findById(userId);
   }
 
-  public async update(userId: string, dto: Partial<IUser>): Promise<IUser | null> {
+  public async update(
+    userId: string,
+    dto: Partial<IUser>,
+  ): Promise<IUser | null> {
     return await User.findByIdAndUpdate(userId, dto, { new: true });
   }
 

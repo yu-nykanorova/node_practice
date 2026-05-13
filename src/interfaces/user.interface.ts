@@ -5,13 +5,12 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
-  age?: number;
+  age: number;
+  role: RoleEnum;
+  isVerified: boolean;
+  isDeleted: boolean;
   phone?: string;
-  role?: RoleEnum;
-  isVerified?: boolean;
-  isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export type IUserCreateDto = Omit<IUser, "_id">;
