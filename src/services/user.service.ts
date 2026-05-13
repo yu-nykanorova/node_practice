@@ -34,9 +34,6 @@ class UserService {
   }
 
   public async getById(userId: string): Promise<IUser> {
-    if (Number.isNaN(userId)) {
-      throw new ApiError("User id must be an integer", 400);
-    }
 
     const user = await userRepository.getById(userId);
 
@@ -48,17 +45,6 @@ class UserService {
   }
 
   public async update(userId: string, dto: Partial<IUser>): Promise<IUser> {
-    if (Number.isNaN(userId)) {
-      throw new ApiError("User id must be an integer", 400);
-    }
-
-    const users = await userRepository.getList();
-
-    const userIndex = users.findIndex((user) => user.id === userId);
-
-    if (userIndex === -1) {
-      throw new ApiError("User not found", 404);
-    }
 
     if (!dto.name || dto.name.length < 3) {
       throw new ApiError(
@@ -76,22 +62,17 @@ class UserService {
       );
     }
 
-    return await userRepository.update(userIndex, dto);
-  }
+    const updatedUser = await userRepository.update(userId, dto);
 
-  public async delete(userId: string): Promise<void> {
-    if (Number.isNaN(userId)) {
-      throw new ApiError("User id must be an integer", 400);
-    }
-
-    const users = await userRepository.getList();
-
-    const userIndex = users.findIndex((user) => user.id === userId);
-    if (userIndex === -1) {
+    if (!updatedUser) {
       throw new ApiError("User not found", 404);
     }
 
-    return await userRepository.delete(userIndex);
+    return updatedUser;
+  }
+
+  public async delete(userId: string): Promise<void> {
+    return await userRepository.delete(userId);
   }
 }
 

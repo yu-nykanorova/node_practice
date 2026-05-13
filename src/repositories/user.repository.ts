@@ -7,47 +7,20 @@ class UserRepository {
   }
 
   public async create(dto: IUserCreateDto): Promise<IUser> {
-    return {} as IUser;
+    return await User.create(dto);
 
-    // const users = await read();
-    //
-    // const newUser: IUser = {
-    //   id: users.length ? users[users.length - 1].id + 1 : 1,
-    //   name: dto.name,
-    //   email: dto.email,
-    //   password: dto.password,
-    // };
-    // users.push(newUser);
-    //
-    // await write(users);
-    // return newUser;
   }
 
   public async getById(userId: string): Promise<IUser | null> {
-    return {} as IUser;
-
-    // const users = await read();
-    //
-    // return users.find((user) => user.id === userId) || null;
+    return await User.findById(userId);
   }
 
-  public async update(userIndex: number, dto: Partial<IUser>): Promise<IUser> {
-    return {} as IUser;
-
-    // const users = await read();
-    //
-    // users[userIndex] = { ...users[userIndex], ...dto };
-    //
-    // await write(users);
-    // return users[userIndex];
+  public async update(userId: string, dto: Partial<IUser>): Promise<IUser | null> {
+    return await User.findByIdAndUpdate(userId, dto, { new: true });
   }
 
-  public async delete(userIndex: number): Promise<void> {
-    // const users = await read();
-    //
-    // users.splice(userIndex, 1);
-    //
-    // await write(users);
+  public async delete(userId: string): Promise<void> {
+    await User.deleteOne({ _id: userId });
   }
 }
 
