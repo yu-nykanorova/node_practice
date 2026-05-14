@@ -18,15 +18,12 @@ class CommonMiddleware {
     };
   }
   public isBodyValid(schema: ObjectSchema) {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const validationError = schema.validate(req.body).error;
-        if (validationError) {
-          throw new ApiError(validationError.message, 400);
-        }
+        await schema.validateAsync(req.body);
         next();
-      } catch (e) {
-        next(e);
+      } catch (e: any) {
+        next(new ApiError(e.details[0].message, 400));
       }
     };
   }
