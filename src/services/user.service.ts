@@ -7,17 +7,6 @@ class UserService {
     return await userRepository.getList();
   }
 
-  public async create(dto: Partial<IUser>): Promise<IUser> {
-
-    const users = await userRepository.getList();
-
-    if (users.find((user) => user.email === dto.email)) {
-      throw new ApiError("This email is already in use", 409);
-    }
-
-    return await userRepository.create(dto);
-  }
-
   public async getById(userId: string): Promise<IUser> {
     const user = await userRepository.getById(userId);
 
@@ -29,7 +18,6 @@ class UserService {
   }
 
   public async update(userId: string, dto: Partial<IUser>): Promise<IUser> {
-
     const updatedUser = await userRepository.update(userId, dto);
 
     if (!updatedUser) {
@@ -45,3 +33,20 @@ class UserService {
 }
 
 export const userService = new UserService();
+
+// hash password
+//
+// public async create(dto: Partial<IUser>): Promise<IUser> {
+//   const users = await userRepository.getList();
+//
+//   if (users.find((user) => user.email === dto.email)) {
+//   throw new ApiError("This email is already in use", 409);
+// }
+//
+// if (!dto.password) {
+//   throw new ApiError("Password is required", 400);
+// }
+//
+// const password = await passwordService.hashPassword(dto.password);
+//
+// return await userRepository.create({ ...dto, password });

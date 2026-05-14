@@ -13,4 +13,20 @@ export const configs = {
   APP_PORT: checkEnv(process.env.APP_PORT, "APP_PORT") || 3001,
   APP_HOST: checkEnv(process.env.APP_HOST, "APP_HOST"),
   MONGO_URI: checkEnv(process.env.MONGO_URI, "MONGO_URI"),
+  JWT_ACCESS_SECRET: checkEnv(
+    process.env.JWT_ACCESS_SECRET,
+    "JWT_ACCESS_SECRET",
+  ),
+  JWT_ACCESS_EXPIRATION: checkEnv(
+    process.env.JWT_ACCESS_EXPIRATION,
+    "JWT_ACCESS_EXPIRATION",
+  ),
+  JWT_REFRESH_SECRET: checkEnv(
+    process.env.JWT_REFRESH_SECRET,
+    "JWT_REFRESH_SECRET",
+  ),
+  JWT_REFRESH_EXPIRATION: checkEnv(
+    process.env.JWT_REFRESH_EXPIRATION,
+    "JWT_REFRESH_EXPIRATION",
+  ),
 };
