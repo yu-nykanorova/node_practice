@@ -27,8 +27,8 @@ class TokenService {
         token,
         configs.JWT_ACCESS_SECRET,
       ) as ITokenPayload;
-    } catch (e) {
-      console.log(e.message);
+    } catch (_e) {
+      console.log(_e);
       throw new ApiError("Invalid token", 401);
     }
   }

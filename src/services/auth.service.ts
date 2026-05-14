@@ -1,6 +1,6 @@
 import { ApiError } from "../errors/api-error";
 import { ITokenPair } from "../interfaces/token.interface";
-import { IUser } from "../interfaces/user.interface";
+import { ISignIn, IUser } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 import { passwordService } from "./password.service";
@@ -27,8 +27,31 @@ class AuthService {
     return { user, tokens };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async signIn(dto: any): Promise<any> {}
+  public async signIn(
+    dto: ISignIn,
+  ): Promise<{ user: IUser; tokens: ITokenPair }> {
+    const user = await userRepository.getByEmail(dto.email);
+    if (!user) {
+      throw new ApiError("User does not exist", 404);
+    }
+
+    const isPasswordCorrect = await passwordService.comparePassword(
+      dto.password,
+      user.password,
+    );
+    if (!isPasswordCorrect) {
+      throw new ApiError("Wrong password", 401);
+    }
+
+    const tokens = tokenService.generateTokens({
+      userId: user._id!,
+      role: user.role,
+    });
+
+    await tokenRepository.create({ ...tokens, _userId: user._id });
+
+    return { user, tokens };
+  }
 
   private async isEmailExistOrThrow(email: string): Promise<void> {
     const user = await userRepository.getByEmail(email);
