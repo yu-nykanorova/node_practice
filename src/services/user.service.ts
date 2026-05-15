@@ -1,4 +1,5 @@
 import { ApiError } from "../errors/api-error";
+import { ITokenPayload } from "../interfaces/token.interface";
 import { IUser } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
 
@@ -17,8 +18,21 @@ class UserService {
     return user;
   }
 
-  public async update(userId: string, dto: Partial<IUser>): Promise<IUser> {
-    const updatedUser = await userRepository.update(userId, dto);
+  public async getMe(jwtPayload: ITokenPayload): Promise<IUser> {
+    const user = await userRepository.getById(jwtPayload.userId);
+
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    return user;
+  }
+
+  public async updateMe(
+    jwtPayload: ITokenPayload,
+    dto: Partial<IUser>,
+  ): Promise<IUser> {
+    const updatedUser = await userRepository.update(jwtPayload.userId, dto);
 
     if (!updatedUser) {
       throw new ApiError("User not found", 404);
@@ -27,8 +41,8 @@ class UserService {
     return updatedUser;
   }
 
-  public async delete(userId: string): Promise<void> {
-    return await userRepository.delete(userId);
+  public async deleteMe(jwtPayload: ITokenPayload): Promise<void> {
+    return await userRepository.delete(jwtPayload.userId);
   }
 }
 

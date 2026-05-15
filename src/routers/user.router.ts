@@ -21,7 +21,7 @@ router.put(
 router.delete("/me", authMiddleware.checkAccessToken, userController.deleteMe);
 
 router.get(
-  "/userId",
+  "/:userId",
   commonMiddleware.isIdValid("userId"),
   userController.getById,
 );
