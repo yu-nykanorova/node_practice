@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import {IToken, ITokenPayload} from "../interfaces/token.interface";
+import { ITokenPayload } from "../interfaces/token.interface";
 import { ISignIn, IUser } from "../interfaces/user.interface";
 import { authService } from "../services/auth.service";
 

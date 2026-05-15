@@ -18,10 +18,12 @@ export const createValidator = Joi.object({
     .messages({
       "string.empty": "Email is required",
       "string.pattern.base": "Email is invalid",
+      "any.required": "Email is required",
     }),
   password: Joi.string().min(6).required().messages({
     "string.empty": "Password is required",
     "string.min": "At least 6 characters long",
+    "any.required": "Password is required",
   }),
   age: Joi.number().min(0).max(120).required().messages({
     "any.required": "Age is required",
@@ -61,4 +63,20 @@ export const updateValidator = Joi.object({
     .messages({
       "string.pattern.base": "Phone number is invalid",
     }),
+});
+
+export const signInValidator = Joi.object({
+  email: Joi.string()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.empty": "Email is required",
+      "string.pattern.base": "Email is invalid",
+      "any.required": "Email is required",
+    }),
+  password: Joi.string().min(6).required().messages({
+    "string.empty": "Password is required",
+    "string.min": "At least 6 characters long",
+    "any.required": "Password is required",
+  }),
 });

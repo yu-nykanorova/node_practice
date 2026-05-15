@@ -1,6 +1,7 @@
 import { ApiError } from "../errors/api-error";
 import { ITokenPayload } from "../interfaces/token.interface";
 import { IUser } from "../interfaces/user.interface";
+import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
@@ -42,7 +43,8 @@ class UserService {
   }
 
   public async deleteMe(jwtPayload: ITokenPayload): Promise<void> {
-    return await userRepository.delete(jwtPayload.userId);
+    await userRepository.delete(jwtPayload.userId);
+    await tokenRepository.deleteByUserId(jwtPayload.userId);
   }
 }
 

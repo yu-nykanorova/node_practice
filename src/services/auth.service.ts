@@ -1,5 +1,5 @@
 import { ApiError } from "../errors/api-error";
-import {IToken, ITokenPair, ITokenPayload} from "../interfaces/token.interface";
+import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import { ISignIn, IUser } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
@@ -53,11 +53,14 @@ class AuthService {
     return { user, tokens };
   }
 
-  public async refresh(refreshToken: string, jwtPayload: ITokenPayload): Promise<ITokenPair> {
-    await tokenRepository.deleteTokenPair({ refreshToken });
+  public async refresh(
+    refreshToken: string,
+    jwtPayload: ITokenPayload,
+  ): Promise<ITokenPair> {
+    await tokenRepository.deleteByUserId(jwtPayload.userId);
 
     const tokens = tokenService.generateTokens({
-      userId: jwtPayload.userId!,
+      userId: jwtPayload.userId,
       role: jwtPayload.role,
     });
 
