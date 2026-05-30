@@ -29,4 +29,6 @@ export const configs = {
     process.env.JWT_REFRESH_EXPIRATION,
     "JWT_REFRESH_EXPIRATION",
   ),
+  SMTP_EMAIL: checkEnv(process.env.SMTP_EMAIL, "EMAIL"),
+  SMTP_PASSWORD: checkEnv(process.env.SMTP_PASSWORD, "PASSWORD"),
 };

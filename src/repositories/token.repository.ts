@@ -11,7 +11,7 @@ class TokenRepository {
   }
 
   public async deleteByUserId(userId: string): Promise<void> {
-    await Token.deleteMany({ _userId: userId });
+    await Token.deleteOne({ _userId: userId });
   }
 }
 
