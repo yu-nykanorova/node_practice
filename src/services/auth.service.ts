@@ -66,7 +66,7 @@ class AuthService {
     refreshToken: string,
     jwtPayload: ITokenPayload,
   ): Promise<ITokenPair> {
-    await tokenRepository.deleteByUserId(jwtPayload.userId);
+    await tokenRepository.deleteTokenPair(refreshToken);
 
     const tokens = tokenService.generateTokens({
       userId: jwtPayload.userId,
@@ -76,6 +76,26 @@ class AuthService {
     await tokenRepository.create({ ...tokens, _userId: jwtPayload.userId });
 
     return tokens;
+  }
+
+  public async logout(refreshToken: string): Promise<void> {
+    await tokenRepository.deleteTokenPair(refreshToken);
+  }
+
+  public async logoutAll(jwtPayload: ITokenPayload): Promise<void> {
+    const user = await userRepository.getById(jwtPayload.userId);
+
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    await tokenRepository.deleteAllTokenPairs(jwtPayload.userId);
+
+    await emailService.sendMail(
+      EmailTypeEnum.LOGOUT_ALL,
+      "juliyasos88@gmail.com",
+      { name: user.name },
+    );
   }
 
   private async isEmailExistOrThrow(email: string): Promise<void> {

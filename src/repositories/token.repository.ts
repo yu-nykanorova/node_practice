@@ -10,8 +10,12 @@ class TokenRepository {
     return await Token.findOne(params);
   }
 
-  public async deleteByUserId(userId: string): Promise<void> {
-    await Token.deleteOne({ _userId: userId });
+  public async deleteTokenPair(refreshToken: string): Promise<void> {
+    await Token.deleteOne({ refreshToken });
+  }
+
+  public async deleteAllTokenPairs(userId: string): Promise<void> {
+    await Token.deleteMany({ _userId: userId });
   }
 }
 

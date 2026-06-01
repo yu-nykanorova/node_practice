@@ -44,7 +44,7 @@ class UserService {
 
   public async deleteMe(jwtPayload: ITokenPayload): Promise<void> {
     await userRepository.delete(jwtPayload.userId);
-    await tokenRepository.deleteByUserId(jwtPayload.userId);
+    await tokenRepository.deleteAllTokenPairs(jwtPayload.userId);
   }
 }
 

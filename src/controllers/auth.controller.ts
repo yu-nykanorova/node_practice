@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ITokenPayload } from "../interfaces/token.interface";
+import { IToken, ITokenPayload } from "../interfaces/token.interface";
 import { ISignIn, IUser } from "../interfaces/user.interface";
 import { authService } from "../services/auth.service";
 
@@ -32,6 +32,26 @@ class AuthController {
 
       const result = await authService.refresh(refreshToken, jwtPayload);
       res.status(201).json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = res.locals.tokenPair as IToken;
+      await authService.logout(refreshToken);
+      res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async logoutAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = res.locals.jwtPayload as ITokenPayload;
+      await authService.logoutAll(jwtPayload);
+      res.sendStatus(204);
     } catch (e) {
       next(e);
     }
