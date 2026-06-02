@@ -1,12 +1,13 @@
-import { EmailTypeEnum } from "../enums/email-type.enum";
-import { ApiError } from "../errors/api-error";
-import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
-import { ISignIn, IUser } from "../interfaces/user.interface";
-import { tokenRepository } from "../repositories/token.repository";
-import { userRepository } from "../repositories/user.repository";
-import { emailService } from "./email.service";
-import { passwordService } from "./password.service";
-import { tokenService } from "./token.service";
+import {ApiError} from "../errors/api-error";
+import {ITokenPair, ITokenPayload} from "../interfaces/token.interface";
+import {ISignIn, IUser} from "../interfaces/user.interface";
+import {tokenRepository} from "../repositories/token.repository";
+import {userRepository} from "../repositories/user.repository";
+import {passwordService} from "./password.service";
+import {sendGridService} from "./send-grid.service";
+import {tokenService} from "./token.service";
+import {EmailTypeEnum} from "../enums/email-type.enum";
+import {configs} from "../config/configs";
 
 class AuthService {
   public async signUp(
@@ -27,11 +28,11 @@ class AuthService {
     });
     await tokenRepository.create({ ...tokens, _userId: user._id });
 
-    await emailService.sendMail(
-      EmailTypeEnum.WELCOME,
-      "juliyasos88@gmail.com",
-      { name: user.name },
-    );
+    await sendGridService.sendByType(user.email, EmailTypeEnum.WELCOME, {
+      name: dto.name,
+      frontUrl: configs.FRONT_URL,
+      actionToken: "actionToken",
+    });
 
     return { user, tokens };
   }
@@ -90,12 +91,6 @@ class AuthService {
     }
 
     await tokenRepository.deleteAllTokenPairs(jwtPayload.userId);
-
-    await emailService.sendMail(
-      EmailTypeEnum.LOGOUT_ALL,
-      "juliyasos88@gmail.com",
-      { name: user.name },
-    );
   }
 
   private async isEmailExistOrThrow(email: string): Promise<void> {

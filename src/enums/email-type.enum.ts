@@ -1,6 +1,5 @@
 export enum EmailTypeEnum {
   WELCOME = "welcome",
-  FORGOT_PASSWORD = "forgot-password",
-  OLD_VISIT = "old-visit",
-  LOGOUT_ALL = "logout",
+  RESET_PASSWORD = "resetPassword",
+  DELETE_ACCOUNT = "deleteAccount",
 }
