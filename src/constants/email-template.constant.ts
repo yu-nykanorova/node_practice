@@ -10,4 +10,7 @@ export const emailTemplateConstant = {
   [EmailTypeEnum.DELETE_ACCOUNT]: {
     templateId: "d-3cd2a96a0e6f40f6a4624a79866fa0cf",
   },
+  [EmailTypeEnum.LOGOUT_ALL]: {
+    templateId: " d-eb5c22fdfbad4f7ebc331490d467b00f",
+  },
 };

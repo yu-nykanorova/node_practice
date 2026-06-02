@@ -4,16 +4,17 @@ import SendGrid from "@sendgrid/mail";
 import { configs } from "../config/configs";
 import { emailTemplateConstant } from "../constants/email-template.constant";
 import { EmailTypeEnum } from "../enums/email-type.enum";
+import { EmailTypeToPayload } from "../types/email-type-to-payload.type";
 
 class SendGridService {
   constructor() {
     SendGrid.setApiKey(configs.SENDGRID_API_KEY);
   }
 
-  public async sendByType(
+  public async sendByType<T extends EmailTypeEnum>(
     to: string,
-    type: EmailTypeEnum,
-    dynamicTemplateData: any,
+    type: T,
+    dynamicTemplateData: EmailTypeToPayload[T],
   ): Promise<void> {
     try {
       const templateId = emailTemplateConstant[type].templateId;

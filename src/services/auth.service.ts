@@ -1,13 +1,13 @@
-import {ApiError} from "../errors/api-error";
-import {ITokenPair, ITokenPayload} from "../interfaces/token.interface";
-import {ISignIn, IUser} from "../interfaces/user.interface";
-import {tokenRepository} from "../repositories/token.repository";
-import {userRepository} from "../repositories/user.repository";
-import {passwordService} from "./password.service";
-import {sendGridService} from "./send-grid.service";
-import {tokenService} from "./token.service";
-import {EmailTypeEnum} from "../enums/email-type.enum";
-import {configs} from "../config/configs";
+import { configs } from "../config/configs";
+import { EmailTypeEnum } from "../enums/email-type.enum";
+import { ApiError } from "../errors/api-error";
+import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
+import { ISignIn, IUser } from "../interfaces/user.interface";
+import { tokenRepository } from "../repositories/token.repository";
+import { userRepository } from "../repositories/user.repository";
+import { passwordService } from "./password.service";
+import { sendGridService } from "./send-grid.service";
+import { tokenService } from "./token.service";
 
 class AuthService {
   public async signUp(
