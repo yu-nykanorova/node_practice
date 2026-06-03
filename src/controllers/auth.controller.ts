@@ -91,6 +91,16 @@ class AuthController {
       next(e);
     }
   }
+
+  public async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = res.locals.jwtPayload as ITokenPayload;
+      await authService.verifyEmail(jwtPayload);
+      res.sendStatus(204);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export const authController = new AuthController();
