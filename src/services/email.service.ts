@@ -38,9 +38,16 @@ export class EmailService {
   public async sendMail<T extends EmailTypeEnum>(
     type: T,
     to: string,
-    context: EmailTypeToPayload[T],
+    context: EmailTypeToPayload[T] & { frontUrl?: string },
   ): Promise<void> {
     const { subject, template } = emailConstants[type];
+
+    //context["frontUrl"] = configs.APP_FRONT_URL;
+
+    const emailContext = {
+      ...context,
+      frontUrl: configs.APP_FRONT_URL,
+    };
 
     const options = {
       // from: configs.SMTP_EMAIL,
@@ -48,7 +55,7 @@ export class EmailService {
       subject,
       // html: "This is a test email",
       template,
-      context,
+      context: emailContext,
     };
 
     await this.transporter.sendMail(options);
