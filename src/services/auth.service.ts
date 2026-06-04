@@ -3,6 +3,7 @@ import { EmailTypeEnum } from "../enums/email-type.enum";
 import { ApiError } from "../errors/api-error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import {
+  IChangePassword,
   IResetPasswordSend,
   IResetPasswordSet,
   ISignIn,
@@ -106,7 +107,7 @@ class AuthService {
       throw new ApiError("User not found", 404);
     }
 
-    await tokenRepository.deleteAllTokenPairs(jwtPayload.userId);
+    await tokenRepository.deleteAllByParams({ _userId: jwtPayload.userId });
 
     await emailService.sendMail(
       EmailTypeEnum.LOGOUT_ALL,
@@ -158,7 +159,7 @@ class AuthService {
       type: ActionTokenTypeEnum.FORGOT_PASSWORD,
     });
 
-    await tokenRepository.deleteAllTokenPairs(jwtPayload.userId);
+    await tokenRepository.deleteAllByParams({ _userId: jwtPayload.userId });
   }
 
   public async verifyEmail(jwtPayload: ITokenPayload): Promise<void> {
@@ -168,6 +169,28 @@ class AuthService {
       _userId: jwtPayload.userId,
       type: ActionTokenTypeEnum.VERIFY_EMAIL,
     });
+  }
+
+  public async changePassword(
+    jwtPayload: ITokenPayload,
+    dto: IChangePassword,
+  ): Promise<void> {
+    const user = await userRepository.getById(jwtPayload.userId);
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    const isPasswordCorrect = await passwordService.comparePassword(
+      dto.oldPassword,
+      user.password,
+    );
+
+    if (!isPasswordCorrect) {
+      throw new ApiError("Wrong previous password", 401);
+    }
+    const password = await passwordService.hashPassword(dto.password);
+    await userRepository.update(jwtPayload.userId, { password });
+    await tokenRepository.deleteAllByParams({ _userId: jwtPayload.userId });
   }
 }
 

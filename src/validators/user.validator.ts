@@ -54,6 +54,9 @@ export const updateValidator = Joi.object({
   password: Joi.string().min(6).messages({
     "string.min": "At least 6 characters long",
   }),
+  oldPassword: Joi.string().min(6).messages({
+    "string.min": "At least 6 characters long",
+  }),
   age: Joi.number().min(0).max(120).messages({
     "number.min": "Age should be greater than 0",
     "number.max": "Age should be higher than 120",

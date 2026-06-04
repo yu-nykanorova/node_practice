@@ -1,10 +1,14 @@
-import {Router} from "express";
+import { Router } from "express";
 
-import {authController} from "../controllers/auth.controller";
-import {authMiddleware} from "../middlewares/auth.middleware";
-import {commonMiddleware} from "../middlewares/common.middleware";
-import {createValidator, signInValidator} from "../validators/user.validator";
-import {ActionTokenTypeEnum} from "../enums/action-token-type.enum";
+import { authController } from "../controllers/auth.controller";
+import { ActionTokenTypeEnum } from "../enums/action-token-type.enum";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { commonMiddleware } from "../middlewares/common.middleware";
+import {
+  createValidator,
+  signInValidator,
+  updateValidator,
+} from "../validators/user.validator";
 
 const router = Router();
 
@@ -40,6 +44,13 @@ router.put(
   "/forgot-password",
   authMiddleware.checkActionToken(ActionTokenTypeEnum.FORGOT_PASSWORD),
   authController.forgotPasswordSet,
+);
+
+router.post(
+  "/change-password",
+  authMiddleware.checkAccessToken,
+  commonMiddleware.isBodyValid(updateValidator),
+  authController.changePassword,
 );
 
 router.put(
