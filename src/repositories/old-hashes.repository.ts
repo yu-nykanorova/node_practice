@@ -1,0 +1,26 @@
+import { IOldHash } from "../interfaces/old-hash.interface";
+import { OldHash } from "../models/old-hash.model";
+
+class OldHashesRepository {
+  public async create(dto: Pick<IOldHash, "_userId" | "hash">): Promise<void> {
+    await OldHash.create(dto);
+  }
+
+  public async findByParams(
+    params: Partial<IOldHash>,
+  ): Promise<IOldHash[] | null> {
+    return await OldHash.find(params);
+  }
+
+  public async deleteManyByParams(params: Partial<IOldHash>): Promise<void> {
+    await OldHash.deleteMany(params);
+  }
+
+  public async deleteOlderThan(date: Date): Promise<void> {
+    await OldHash.deleteMany({
+      createdAt: { $lt: date },
+    });
+  }
+}
+
+export const oldHashesRepository = new OldHashesRepository();

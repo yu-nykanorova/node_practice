@@ -10,6 +10,7 @@ import {
   IUser,
 } from "../interfaces/user.interface";
 import { actionTokenRepository } from "../repositories/action-token.repository";
+import { oldHashesRepository } from "../repositories/old-hashes.repository";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 import { emailService } from "./email.service";
@@ -66,6 +67,7 @@ class AuthService {
       dto.password,
       user.password,
     );
+
     if (!isPasswordCorrect) {
       throw new ApiError("Wrong password", 401);
     }
@@ -151,8 +153,19 @@ class AuthService {
     dto: IResetPasswordSet,
     jwtPayload: ITokenPayload,
   ): Promise<void> {
-    const password = await passwordService.hashPassword(dto.password);
-    await userRepository.update(jwtPayload.userId, { password });
+    const newPassword = await passwordService.hashPassword(dto.password);
+    const user = await userRepository.getById(jwtPayload.userId);
+
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    await userRepository.update(jwtPayload.userId, { password: newPassword });
+
+    await oldHashesRepository.create({
+      _userId: jwtPayload.userId,
+      hash: user.password,
+    });
 
     await actionTokenRepository.deleteManyByParams({
       _userId: jwtPayload.userId,
