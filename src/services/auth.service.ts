@@ -160,6 +160,11 @@ class AuthService {
       throw new ApiError("User not found", 404);
     }
 
+    await passwordService.checkPasswordsEquality(
+      dto.password,
+      jwtPayload.userId,
+    );
+
     await userRepository.update(jwtPayload.userId, { password: newPassword });
 
     await oldHashesRepository.create({
@@ -201,8 +206,21 @@ class AuthService {
     if (!isPasswordCorrect) {
       throw new ApiError("Wrong previous password", 401);
     }
+
     const password = await passwordService.hashPassword(dto.password);
+
+    await passwordService.checkPasswordsEquality(
+      dto.password,
+      jwtPayload.userId,
+    );
+
     await userRepository.update(jwtPayload.userId, { password });
+
+    await oldHashesRepository.create({
+      _userId: jwtPayload.userId,
+      hash: user.password,
+    });
+
     await tokenRepository.deleteAllByParams({ _userId: jwtPayload.userId });
   }
 }

@@ -16,10 +16,11 @@ class OldHashesRepository {
     await OldHash.deleteMany(params);
   }
 
-  public async deleteOlderThan(date: Date): Promise<void> {
-    await OldHash.deleteMany({
+  public async deleteOlderThan(date: Date): Promise<number> {
+    const { deletedCount } = await OldHash.deleteMany({
       createdAt: { $lt: date },
     });
+    return deletedCount;
   }
 }
 

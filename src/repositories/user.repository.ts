@@ -1,4 +1,5 @@
 import { IUser } from "../interfaces/user.interface";
+import { Token } from "../models/token.model";
 import { User } from "../models/user.model";
 
 class UserRepository {
@@ -16,6 +17,31 @@ class UserRepository {
 
   public async getByEmail(email: string): Promise<IUser | null> {
     return await User.findOne({ email }).select("+password");
+  }
+
+  public async getByOldLoginDate(date: Date): Promise<IUser[]> {
+    return await User.aggregate([
+      {
+        $lookup: {
+          from: Token.collection.name,
+          localField: "_id",
+          foreignField: "_userId",
+          as: "tokens",
+        },
+      },
+      {
+        $addFields: {
+          lastLogin: {
+            $max: "$tokens.updatedAt",
+          },
+        },
+      },
+      {
+        $match: {
+          $or: [{ lastLogin: { $lt: date } }, { lastLogin: null }],
+        },
+      },
+    ]);
   }
 
   public async update(

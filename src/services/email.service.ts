@@ -6,7 +6,7 @@ import HbsTransporter from "nodemailer-express-handlebars";
 import { configs } from "../config/configs";
 import { emailConstants } from "../constants/email.constants";
 import { EmailTypeEnum } from "../enums/email-type.enum";
-import {EmailTypeToPayload} from "../types/email-type-to-payload.type";
+import { EmailTypeToPayload } from "../types/email-type-to-payload.type";
 
 export class EmailService {
   private transporter: Transporter;
