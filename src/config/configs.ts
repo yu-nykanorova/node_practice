@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import {ObjectCannedACL} from "@aws-sdk/client-s3";
 
 dotenv.config();
 
@@ -52,4 +53,14 @@ export const configs = {
 
   SMTP_EMAIL: checkEnv(process.env.SMTP_EMAIL, "EMAIL"),
   SMTP_PASSWORD: checkEnv(process.env.SMTP_PASSWORD, "PASSWORD"),
+
+  AWS_ACCESS_KEY: checkEnv(process.env.AWS_ACCESS_KEY, "AWS_ACCESS_KEY"),
+  AWS_SECRET_KEY: checkEnv(process.env.AWS_SECRET_KEY, "AWS_SECRET_KEY"),
+  AWS_S3_BUCKET_NAME: checkEnv(
+    process.env.AWS_S3_BUCKET_NAME,
+    "AWS_S3_BUCKET_NAME",
+  ),
+  AWS_S3_REGION: checkEnv(process.env.AWS_S3_REGION, "AWS_S3_REGION"),
+  AWS_S3_ACL: checkEnv(process.env.AWS_S3_ACL, "AWS_S3_ACL") as ObjectCannedACL,
+  AWS_S3_ENDPOINT: checkEnv(process.env.AWS_S3_ENDPOINT, "AWS_S3_ENDPOOT"),
 };

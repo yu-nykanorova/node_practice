@@ -1,9 +1,13 @@
+import { UploadedFile } from "express-fileupload";
+
+import { FileItemTypeEnum } from "../enums/file-item-type-enum";
 import { ApiError } from "../errors/api-error";
 import { ITokenPayload } from "../interfaces/token.interface";
 import { IUser } from "../interfaces/user.interface";
 import { oldHashesRepository } from "../repositories/old-hashes.repository";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
+import { s3Service } from "./s3.service";
 
 class UserService {
   public async getList(): Promise<IUser[]> {
@@ -50,23 +54,26 @@ class UserService {
       _userId: jwtPayload.userId,
     });
   }
+
+  public async uploadAvatar(
+    jwtPayload: ITokenPayload,
+    file: UploadedFile,
+  ): Promise<IUser> {
+    const user = await userRepository.getById(jwtPayload.userId);
+
+    const avatar = await s3Service.uploadFile(
+      file,
+      FileItemTypeEnum.USER,
+      user._id,
+    );
+    // console.log(avatar);
+    const updatedUser = await userRepository.update(user._id, { avatar });
+    if (user.avatar) {
+      await s3Service.deleteFile(user.avatar);
+    }
+    return updatedUser;
+  }
 }
 
 export const userService = new UserService();
 
-// hash password
-//
-// public async create(dto: Partial<IUser>): Promise<IUser> {
-//   const users = await userRepository.getList();
-//
-//   if (users.find((user) => user.email === dto.email)) {
-//   throw new ApiError("This email is already in use", 409);
-// }
-//
-// if (!dto.password) {
-//   throw new ApiError("Password is required", 400);
-// }
-//
-// const password = await passwordService.hashPassword(dto.password);
-//
-// return await userRepository.create({ ...dto, password });
