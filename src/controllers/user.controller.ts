@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 
+import { ApiError } from "../errors/api-error";
 import { ITokenPayload } from "../interfaces/token.interface";
 import { IUser } from "../interfaces/user.interface";
 import { userPresenter } from "../presenters/user.presenter";
@@ -64,11 +65,23 @@ class UserController {
   public async uploadAvatar(req: Request, res: Response, next: NextFunction) {
     try {
       const jwtPayload = res.locals.jwtPayload as ITokenPayload;
-      const avatar = req.files.avatar as UploadedFile;
+      const avatar = req.files?.avatar as UploadedFile;
+
+      if (!avatar) {
+        throw new ApiError("Avatar file is required", 400);
+      }
 
       const user = await userService.uploadAvatar(jwtPayload, avatar);
       const result = userPresenter.toPublicResDto(user);
       res.status(201).json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async deleteAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      res.sendStatus(204);
     } catch (e) {
       next(e);
     }

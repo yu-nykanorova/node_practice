@@ -61,19 +61,32 @@ class UserService {
   ): Promise<IUser> {
     const user = await userRepository.getById(jwtPayload.userId);
 
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
     const avatar = await s3Service.uploadFile(
       file,
       FileItemTypeEnum.USER,
-      user._id,
+      user._id!,
     );
-    // console.log(avatar);
-    const updatedUser = await userRepository.update(user._id, { avatar });
+
+    const updatedUser = await userRepository.update(user._id!, { avatar });
     if (user.avatar) {
       await s3Service.deleteFile(user.avatar);
     }
+
+    if (!updatedUser) {
+      throw new ApiError("User not found", 404);
+    }
+
     return updatedUser;
   }
+
+  public async deleteAvatar() {
+
+  }
+
 }
 
 export const userService = new UserService();
-
