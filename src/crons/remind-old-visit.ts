@@ -30,4 +30,4 @@ const handler = async () => {
   }
 };
 
-export const remindOldVisitCronJob = new CronJob("0,20,40 * * * * *", handler);
+export const remindOldVisitCronJob = new CronJob("0 0 * * *", handler);

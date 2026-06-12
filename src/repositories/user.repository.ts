@@ -54,6 +54,12 @@ class UserRepository {
   public async delete(userId: string): Promise<void> {
     await User.deleteOne({ _id: userId });
   }
+
+  public async deleteField(userId: string, fieldName: string): Promise<void> {
+    await User.findByIdAndUpdate(userId, {
+      $unset: { [fieldName]: "" },
+    });
+  }
 }
 
 export const userRepository = new UserRepository();

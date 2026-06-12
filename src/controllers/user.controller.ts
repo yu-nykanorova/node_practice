@@ -81,6 +81,8 @@ class UserController {
 
   public async deleteAvatar(req: Request, res: Response, next: NextFunction) {
     try {
+      const jwtPayload = res.locals.jwtPayload as ITokenPayload;
+      await userService.deleteAvatar(jwtPayload);
       res.sendStatus(204);
     } catch (e) {
       next(e);

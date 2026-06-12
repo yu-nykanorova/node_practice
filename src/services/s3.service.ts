@@ -46,12 +46,17 @@ class S3Service {
   }
 
   public async deleteFile(filePath: string): Promise<void> {
-    await this.client.send(
-      new DeleteObjectCommand({
-        Bucket: configs.AWS_S3_BUCKET_NAME,
-        Key: filePath,
-      }),
-    );
+    try {
+      await this.client.send(
+        new DeleteObjectCommand({
+          Bucket: configs.AWS_S3_BUCKET_NAME,
+          Key: filePath,
+        }),
+      );
+    } catch (error) {
+      console.error("Error upload:", error);
+      throw error;
+    }
   }
 
   private buildPath(

@@ -83,10 +83,21 @@ class UserService {
     return updatedUser;
   }
 
-  public async deleteAvatar() {
+  public async deleteAvatar(jwtPayload: ITokenPayload): Promise<void> {
+    const user = await userRepository.getById(jwtPayload.userId);
 
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    if (!user.avatar) {
+      throw new ApiError("Avatar not found", 404);
+    }
+
+    await s3Service.deleteFile(user.avatar);
+
+    await userRepository.deleteField(user._id!, "avatar");
   }
-
 }
 
 export const userService = new UserService();

@@ -1,6 +1,8 @@
 import { Router } from "express";
 
+import { fileConstants } from "../constants/file.constants";
 import { userController } from "../controllers/user.controller";
+import { FileTypeEnum } from "../enums/file-type.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
 import { fileMiddleware } from "../middlewares/file.middleware";
@@ -24,7 +26,7 @@ router.delete("/me", authMiddleware.checkAccessToken, userController.deleteMe);
 router.post(
   "/me/avatar",
   authMiddleware.checkAccessToken,
-  fileMiddleware.isFileValid(),
+  fileMiddleware.isFileValid(fileConstants[FileTypeEnum.AVATAR]),
   userController.uploadAvatar,
 );
 
