@@ -3,15 +3,21 @@ import { UploadedFile } from "express-fileupload";
 import { FileItemTypeEnum } from "../enums/file-item-type-enum";
 import { ApiError } from "../errors/api-error";
 import { ITokenPayload } from "../interfaces/token.interface";
-import { IUser } from "../interfaces/user.interface";
+import {
+  IUser,
+  IUserListQuery,
+  IUserListResponse,
+} from "../interfaces/user.interface";
+import { userPresenter } from "../presenters/user.presenter";
 import { oldHashesRepository } from "../repositories/old-hashes.repository";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 import { s3Service } from "./s3.service";
 
 class UserService {
-  public async getList(): Promise<IUser[]> {
-    return await userRepository.getList();
+  public async getList(query: IUserListQuery): Promise<IUserListResponse> {
+    const [entities, total] = await userRepository.getList(query);
+    return userPresenter.toListResDto(entities, total, query);
   }
 
   public async getById(userId: string): Promise<IUser> {

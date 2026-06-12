@@ -17,10 +17,22 @@ class CommonMiddleware {
       }
     };
   }
+
   public isBodyValid(schema: ObjectSchema) {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
         await schema.validateAsync(req.body);
+        next();
+      } catch (e: any) {
+        next(new ApiError(e.details[0].message, 400));
+      }
+    };
+  }
+
+  public isQueryValid(schema: ObjectSchema) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        res.locals.query = await schema.validateAsync(req.query);
         next();
       } catch (e: any) {
         next(new ApiError(e.details[0].message, 400));

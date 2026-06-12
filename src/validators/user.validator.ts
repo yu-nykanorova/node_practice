@@ -1,5 +1,8 @@
 import Joi from "joi";
 
+import { OrderEnum } from "../enums/order.enum";
+import { UserListOrderByEnum } from "../enums/user-list-order-by.enum";
+
 const name = Joi.string()
   .trim()
   .pattern(/^[A-Za-zА-Яа-яёЁіІїЇєЄҐґ]+$/)
@@ -64,4 +67,12 @@ export const signInValidator = Joi.object({
     "string.empty": "Password is required",
     "any.required": "Password is required",
   }),
+});
+
+export const listQuery = Joi.object({
+  page: Joi.number().min(1).default(1),
+  limit: Joi.number().min(1).max(100).default(10),
+  search: Joi.string().trim().lowercase(),
+  order: Joi.string().valid(...Object.values(OrderEnum)),
+  orderBy: Joi.string().valid(...Object.values(UserListOrderByEnum)),
 });

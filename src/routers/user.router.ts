@@ -6,11 +6,15 @@ import { FileTypeEnum } from "../enums/file-type.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
 import { fileMiddleware } from "../middlewares/file.middleware";
-import { updateValidator } from "../validators/user.validator";
+import { listQuery, updateValidator } from "../validators/user.validator";
 
 const router = Router();
 
-router.get("/", userController.getList);
+router.get(
+  "/",
+  commonMiddleware.isQueryValid(listQuery),
+  userController.getList,
+);
 
 router.get("/me", authMiddleware.checkAccessToken, userController.getMe);
 
