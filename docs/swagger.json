@@ -1,0 +1,104 @@
+ {
+  "swagger": "2.0",
+  "info": {
+    "description": "This api is for testing the swagger ui",
+    "version": "1.0.7",
+    "title": "Express API",
+    "contact": {
+      "email": "test@email.com"
+    }
+  },
+  "host": "0.0.0.0:3000",
+  "tags": [
+    {
+      "name": "user",
+      "description": "Operations about user"
+    },
+    {
+      "name": "auth",
+      "description": "Operations about authorization"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/user/me": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get me",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "getMyUser",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "security": [{"BearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "successfull opreration",
+            "schema": {
+              "$ref": "#/definitions/PrivateUserResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update me"
+
+      }
+    }
+  },
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization"
+    }
+  },
+  "definitions": {
+    "UpdateUserDTO": {},
+    "PrivateUserResponse": {
+      "type": "object",
+      "required": ["_id", "name", "email", "role", "isDeleted", "isVerified"],
+      "properties": {
+        "_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "The unique identifier for a user"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "age": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "user"]
+        },
+        "isDeleted": {
+          "type": "boolean"
+        },
+        "isVerified": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
