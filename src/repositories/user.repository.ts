@@ -5,6 +5,7 @@ import { User } from "../models/user.model";
 class UserRepository {
   public async getList(query: IUserListQuery): Promise<[IUser[], number]> {
     const filterObj: Record<string, any> = {};
+    const sortObj: Record<string, 1 | -1> = {};
 
     if (query.search) {
       filterObj.name = { $regex: query.search, $options: "i" };
@@ -14,14 +15,16 @@ class UserRepository {
       // ];
     }
 
-    // TODO ordering for search, sorting
+    if (query.orderBy) {
+      sortObj[query.orderBy] = query.order === "desc" ? -1 : 1;
+    }
 
     const limit = query.limit || 10;
     const page = query.page || 1;
     const skip = limit * (page - 1);
 
     return await Promise.all([
-      User.find(filterObj).limit(limit).skip(skip),
+      User.find(filterObj).sort(sortObj).limit(limit).skip(skip),
       User.countDocuments(filterObj),
     ]);
   }
