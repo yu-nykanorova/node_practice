@@ -1,9 +1,9 @@
  {
   "swagger": "2.0",
   "info": {
-    "description": "This api is for testing the swagger ui",
+    "description": "This API is for testing the swagger ui",
     "version": "1.0.7",
-    "title": "Express API",
+    "title": "Node.js and Express practice API",
     "contact": {
       "email": "test@email.com"
     }
@@ -23,7 +23,7 @@
     "http"
   ],
   "paths": {
-    "/user/me": {
+    "/users/me": {
       "get": {
         "tags": ["user"],
         "summary": "Get me",
@@ -36,7 +36,7 @@
         "security": [{"BearerAuth": []}],
         "responses": {
           "200": {
-            "description": "successfull opreration",
+            "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/PrivateUserResponse"
             }
@@ -50,8 +50,451 @@
         }
       },
       "put": {
-        "summary": "Update me"
-
+        "tags": ["user"],
+        "summary": "Update me",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "updateMyUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateUserDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/PrivateUserResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete":{
+        "tags": ["user"],
+        "summary": "Delete user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "deleteMyUser",
+        "security": [{"BearerAuth": []}],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "schema": {
+              "$ref": "#/definitions/PrivateUserResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/me/avatar": {
+      "post": {
+        "tags": ["user"],
+        "summary": "Upload avatar",
+        "description": "Upload user avatar",
+        "operationId": "uploadAvatar",
+        "security": [{"BearerAuth": []}],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "avatar",
+            "in": "formData",
+            "required": true,
+            "type": "file",
+            "description": "Avatar image file"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Avatar uploaded successfully",
+            "schema": {
+              "$ref": "#/definitions/PrivateUserResponse"
+            }
+          },
+          "400": {
+            "description": "Avatar file is required"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["user"],
+        "summary": "Delete avatar",
+        "description": "Delete current user avatar",
+        "operationId": "deleteAvatar",
+        "security": [{"BearerAuth": []}],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "204": {
+            "description": "Avatar deleted successfully"
+          },
+          "404": {
+            "description": "Avatar not found"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get users list",
+        "description": "Returns list of users",
+        "operationId": "getUsersList",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "integer"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "integer"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "type": "string",
+            "enum": ["asc", "desc"]
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "type": "string",
+            "enum": ["name", "age"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/UserListResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get user by ID",
+        "description": "Returns a user by identifier",
+        "operationId": "getUserById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "User identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/PrivateUserResponse"
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/sign-up": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "User registration",
+        "description": "Create a new user account",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignUpDTO"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User successfully created",
+            "schema": {
+              "$ref": "#/definitions/AuthResponse"
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/auth/sign-in": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "User login",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignInDTO"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Login successful",
+            "schema": {
+              "$ref": "#/definitions/AuthResponse"
+            }
+          },
+          "401": {
+            "description": "Wrong password"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Refresh tokens",
+        "security": [
+          { "BearerAuth": [] }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "201": {
+            "description": "Tokens refreshed",
+            "schema": {
+              "$ref": "#/definitions/RefreshResponse"
+            }
+          },
+          "401": {
+            "description": "Invalid refresh token"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Logout user",
+        "security": [
+          { "BearerAuth": [] }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "204": {
+            "description": "Logged out successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/logout-all": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Logout from all devices",
+        "security": [
+          { "BearerAuth": [] }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "204": {
+            "description": "Logged out from all sessions"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Send reset password email",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ForgotPasswordSendDTO"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Email sent"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["auth"],
+        "summary": "Set new password",
+        "security": [
+          { "BearerAuth": [] }
+        ],
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ForgotPasswordSetDTO"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Password updated"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Invalid or expired action token"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "put": {
+        "tags": ["auth"],
+        "summary": "Verify user email",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "token"
+              ],
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Email verification token"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Email verified"
+          },
+          "401": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Change password",
+        "security": [
+          { "BearerAuth": [] }
+        ],
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangePasswordDTO"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Password changed successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
       }
     }
   },
@@ -63,7 +506,23 @@
     }
   },
   "definitions": {
-    "UpdateUserDTO": {},
+    "UpdateUserDTO": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Updated name in the system",
+          "type": "string"
+        },
+        "phone": {
+          "description": "Updated phone number in the system",
+          "type": "string"
+        },
+        "age": {
+          "description": "Age in years",
+          "type": "integer"
+        }
+      }
+    },
     "PrivateUserResponse": {
       "type": "object",
       "required": ["_id", "name", "email", "role", "isDeleted", "isVerified"],
@@ -80,7 +539,7 @@
           "type": "string"
         },
         "age": {
-          "type": "string"
+          "type": "integer"
         },
         "phone": {
           "type": "string"
@@ -97,6 +556,163 @@
         },
         "isVerified": {
           "type": "boolean"
+        }
+      }
+    },
+    "UserListResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PrivateUserResponse"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "description": "Total number of users"
+        },
+        "limit": {
+          "type": "string",
+          "description": "Number of users per page"
+        },
+        "page": {
+          "type": "string",
+          "description": "Current page number"
+        },
+        "orderBy": {
+          "type": "string",
+          "enum": ["name", "age"],
+          "description": "Field used for sorting by name or age"
+        },
+        "order": {
+          "type": "string",
+          "enum": ["asc", "desc"],
+          "description": "Field used for sorting by ascending or descending"
+        }
+      }
+    },
+    "SignUpDTO": {
+      "type": "object",
+      "required": [
+        "email",
+        "password",
+        "name",
+        "age"
+      ],
+      "properties": {
+        "name": {
+          "description": "User name",
+          "type": "string"
+        },
+        "email": {
+          "description": "User email",
+          "type": "string"
+        },
+        "password": {
+          "description": "User password",
+          "type": "string"
+        },
+        "phone": {
+          "description": "User phone",
+          "type": "string"
+        },
+        "age": {
+          "description": "User age in years",
+          "type": "integer"
+        }
+      }
+    },
+    "SignInDTO": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "description": "User email",
+          "type": "string"
+        },
+        "password": {
+          "description": "User password",
+          "type": "string"
+        }
+      }
+    },
+    "AuthResponse": {
+      "type": "object",
+      "properties": {
+        "tokens": {
+          "$ref": "#/definitions/TokenPair"
+        },
+        "user": {
+          "$ref": "#/definitions/PrivateUserResponse"
+        }
+      }
+    },
+    "RefreshResponse": {
+      "type": "object",
+      "properties": {
+        "tokens": {
+          "$ref": "#/definitions/TokenPair"
+        }
+      }
+    },
+    "ForgotPasswordSendDTO": {
+      "type": "object",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "email": {
+          "description": "User email",
+          "type": "string"
+        }
+      }
+    },
+    "ForgotPasswordSetDTO": {
+      "type": "object",
+      "required": [
+        "password",
+        "token"
+      ],
+      "properties": {
+        "password": {
+          "type": "string",
+          "description": "New password"
+        },
+        "token": {
+          "type": "string",
+          "description": "Password reset token"
+        }
+      }
+    },
+    "ChangePasswordDTO": {
+      "type": "object",
+      "required": [
+        "password",
+        "oldPassword"
+      ],
+      "properties": {
+        "password": {
+          "type": "string",
+          "description": "New password"
+        },
+        "oldPassword": {
+          "type": "string",
+          "description": "Current password"
+        }
+      }
+    },
+    "TokenPair": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
         }
       }
     }
