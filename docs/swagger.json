@@ -511,7 +511,9 @@
       "properties": {
         "name": {
           "description": "Updated name in the system",
-          "type": "string"
+          "type": "string",
+          "minLength": 3,
+          "pattern": "^[A-Za-zА-Яа-яёЁіІїЇєЄҐґ]+$"
         },
         "phone": {
           "description": "Updated phone number in the system",
@@ -603,15 +605,19 @@
       "properties": {
         "name": {
           "description": "User name",
-          "type": "string"
+          "type": "string",
+          "minLength": 3,
+          "pattern": "^[A-Za-zА-Яа-яёЁіІїЇєЄҐґ]+$"
         },
         "email": {
           "description": "User email",
-          "type": "string"
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
         },
         "password": {
           "description": "User password",
-          "type": "string"
+          "type": "string",
+          "minLength": 6
         },
         "phone": {
           "description": "User phone",
@@ -680,7 +686,8 @@
       "properties": {
         "password": {
           "type": "string",
-          "description": "New password"
+          "description": "New password",
+          "minLength": 6
         },
         "token": {
           "type": "string",
@@ -697,11 +704,13 @@
       "properties": {
         "password": {
           "type": "string",
-          "description": "New password"
+          "description": "New password",
+          "minLength": 3
         },
         "oldPassword": {
           "type": "string",
-          "description": "Current password"
+          "description": "Current password",
+          "minLength": 6
         }
       }
     },
