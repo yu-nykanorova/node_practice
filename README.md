@@ -35,3 +35,24 @@ Sending emails with Nodemailer.
 ### What was implemented
 - added two new endpoints for user logout and user logoutAll(sessions)
 - added sending an email after user logoutAll(sessions)
+
+## Installation
+Clone the repository:
+
+```bash
+git clone <repository-url>
+cd nodejs_practice
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+Create a .env file in the project root, copy and configure variables from the .env.example.
+
+Run the application in development mode:
+
+```bash
+npm run start:dev
+```
