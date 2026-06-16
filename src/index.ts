@@ -5,7 +5,7 @@ import swaggerUi from "swagger-ui-express";
 
 import swaggerDocument from "../docs/swagger.json";
 import { configs } from "./config/configs";
-//import { cronRunner } from "./crons";
+import { cronRunner } from "./crons";
 import { ApiError } from "./errors/api-error";
 import { authRouter } from "./routers/auth.router";
 import { userRouter } from "./routers/user.router";
@@ -37,7 +37,7 @@ process.on("uncaughtException", (error) => {
 
 app.listen(configs.APP_PORT, async () => {
   await mongoose.connect(configs.MONGO_URI);
-  //cronRunner();
+  cronRunner();
   console.log(
     `Server running on http://${configs.APP_HOST}${configs.APP_PORT}`,
   );
