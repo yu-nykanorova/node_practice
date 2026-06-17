@@ -1,8 +1,8 @@
 import * as bcrypt from "bcrypt";
 
 import { ApiError } from "../errors/api-error";
+import { IUser } from "../interfaces/user.interface";
 import { oldHashesRepository } from "../repositories/old-hashes.repository";
-import { userRepository } from "../repositories/user.repository";
 
 class PasswordService {
   async hashPassword(password: string): Promise<string> {
@@ -18,25 +18,10 @@ class PasswordService {
 
   async checkPasswordsEquality(
     newPassword: string,
-    userId: string,
+    user: IUser,
   ): Promise<void> {
-    const user = await userRepository.getById(userId);
-
-    if (!user) {
-      throw new ApiError("User not found", 404);
-    }
-
-    const isCurrentPassword = await this.comparePassword(
-      newPassword,
-      user.password,
-    );
-
-    if (isCurrentPassword) {
-      throw new ApiError("New password must differ from the previous one", 400);
-    }
-
     const oldHashes = await oldHashesRepository.findByParams({
-      _userId: userId,
+      _userId: user._id,
     });
 
     if (oldHashes) {

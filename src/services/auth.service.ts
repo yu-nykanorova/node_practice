@@ -30,6 +30,11 @@ class AuthService {
     const password = await passwordService.hashPassword(dto.password);
     const user = await userRepository.create({ ...dto, password });
 
+    await oldHashesRepository.create({
+      _userId: user._id!,
+      hash: password,
+    });
+
     const tokens = tokenService.generateTokens({
       userId: user._id!,
       role: user.role,
@@ -153,23 +158,21 @@ class AuthService {
     dto: IResetPasswordSet,
     jwtPayload: ITokenPayload,
   ): Promise<void> {
-    const newPassword = await passwordService.hashPassword(dto.password);
     const user = await userRepository.getById(jwtPayload.userId);
 
     if (!user) {
       throw new ApiError("User not found", 404);
     }
 
-    await passwordService.checkPasswordsEquality(
-      dto.password,
-      jwtPayload.userId,
-    );
+    await passwordService.checkPasswordsEquality(dto.password, user);
+
+    const newPassword = await passwordService.hashPassword(dto.password);
 
     await userRepository.update(jwtPayload.userId, { password: newPassword });
 
     await oldHashesRepository.create({
       _userId: jwtPayload.userId,
-      hash: user.password,
+      hash: newPassword,
     });
 
     await actionTokenRepository.deleteManyByParams({
@@ -194,6 +197,7 @@ class AuthService {
     dto: IChangePassword,
   ): Promise<void> {
     const user = await userRepository.getById(jwtPayload.userId);
+
     if (!user) {
       throw new ApiError("User not found", 404);
     }
@@ -207,18 +211,15 @@ class AuthService {
       throw new ApiError("Wrong previous password", 401);
     }
 
-    const password = await passwordService.hashPassword(dto.password);
+    await passwordService.checkPasswordsEquality(dto.password, user);
 
-    await passwordService.checkPasswordsEquality(
-      dto.password,
-      jwtPayload.userId,
-    );
+    const password = await passwordService.hashPassword(dto.password);
 
     await userRepository.update(jwtPayload.userId, { password });
 
     await oldHashesRepository.create({
       _userId: jwtPayload.userId,
-      hash: user.password,
+      hash: password,
     });
 
     await tokenRepository.deleteAllByParams({ _userId: jwtPayload.userId });
